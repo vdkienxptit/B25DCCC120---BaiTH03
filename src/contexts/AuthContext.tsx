@@ -11,17 +11,23 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(() => {
+    const tenDangNhap = localStorage.getItem('shopmini_user');
+    return tenDangNhap ? { tenDangNhap } : null;
+  });
 
   const login = (username: string, password: string): boolean => {
     if (username.trim() !== '' && password === '123456') {
-      setUser({ tenDangNhap: username });
+      const nguoiDung = { tenDangNhap: username.trim() };
+      localStorage.setItem('shopmini_user', nguoiDung.tenDangNhap);
+      setUser(nguoiDung);
       return true;
     }
     return false;
   };
 
   const logout = () => {
+    localStorage.removeItem('shopmini_user');
     setUser(null);
   };
 
